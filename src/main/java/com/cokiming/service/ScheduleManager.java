@@ -28,7 +28,7 @@ public class ScheduleManager {
     @Autowired
     private ScheduleService scheduleService;
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    @Scheduled(cron = "0/20 * * * * ?")
     @LogInfo(url = "www.baidu.com",description = "test schedule",project = "schedule")
     public String test() {
         logger.info("test...");
@@ -65,20 +65,25 @@ public class ScheduleManager {
 
     public Result removeSchedule(String url, String cronExpression, String project) {
         String jobName = createJobName(url,project,cronExpression);
+        return removeSchedule(jobName,project);
+    }
+
+    public Result removeSchedule(String jobName, String project) {
         try {
             ScheduleUtil.removeSchedule(jobName,project);
             scheduleService.removeJob(jobName);
         } catch (Exception e) {
-            e.printStackTrace();
             return Result.fail("定时任务移除失败");
         }
         return Result.success();
     }
 
     public void executeMethod(String url, String method, String project, String cronExpression) {
+        String jobName = createJobName(url,project,cronExpression);
         ScheduleLog log = new ScheduleLog();
-        log.setJobName(createJobName(url,project,cronExpression));
+        log.setJobName(jobName);
         log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
+        log.setFailTimes(0);
 
         try{
             switch (method) {
@@ -93,9 +98,19 @@ public class ScheduleManager {
                 default:log.setReturnContent("default");break;
             }
         } catch (Exception e) {
+            ScheduleLog origin = scheduleService.selectLatestOneByJobName(jobName);
+            int failTimes = 0;
+            if (origin != null) {
+                failTimes = origin.getFailTimes() + 1;
+            }
             log.setException(e.getMessage());
             log.setExecuteResult(ScheduleLog.RESULT_FAIL);
             log.setReturnContent(null);
+            log.setFailTimes(failTimes);
+            //失败超过最大限制次数即删除任务
+            if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES) {
+                removeSchedule(url,cronExpression,project);
+            }
         }
 
         logger.info(log);

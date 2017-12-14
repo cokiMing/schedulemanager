@@ -21,6 +21,8 @@ public class ScheduleLog {
     private String jobName;
     /**方法名*/
     private String methodName;
+    /**连续失败次数*/
+    private int failTimes;
 
     public static final String RESULT_SUCCESS = "SUCCESS";
 
@@ -82,6 +84,14 @@ public class ScheduleLog {
 
     public void setMethodName(String methodName) {
         this.methodName = methodName;
+    }
+
+    public int getFailTimes() {
+        return failTimes;
+    }
+
+    public void setFailTimes(int failTimes) {
+        this.failTimes = failTimes;
     }
 
     @Override

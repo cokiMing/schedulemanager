@@ -29,6 +29,10 @@ public class ScheduleService {
         logger.info("保存了job：" + scheduleJob);
     }
 
+    public ScheduleLog selectLatestOneByJobName(String jobName) {
+        return new ScheduleLog();
+    }
+
     public ScheduleLog selectOneByModel(ScheduleLog scheduleLog) {
         return new ScheduleLog();
     }

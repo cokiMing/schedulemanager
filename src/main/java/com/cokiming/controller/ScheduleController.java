@@ -69,15 +69,22 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/removeSchedule",method = RequestMethod.POST)
     public Result deleteSchedule(@RequestBody JSONObject jsonObject) {
-        String cron = jsonObject.getString("cronExpression");
-        if (!checkCronExpression(cron)) {
-            return Result.fail("cron表达式格式不正确");
+        String jobName = jsonObject.getString("jobName");
+        String project = jsonObject.getString("project");
+        if (project == null) {
+            return Result.fail("project为空");
         }
 
-        String url = jsonObject.getString("url");
-        String project = jsonObject.getString("project");
-
-        return scheduleManager.removeSchedule(url,cron,project);
+        if (jobName == null) {
+            String cron = jsonObject.getString("cronExpression");
+            if (!checkCronExpression(cron)) {
+                return Result.fail("cron表达式格式不正确");
+            }
+            String url = jsonObject.getString("url");
+            return scheduleManager.removeSchedule(url,cron,project);
+        } else {
+            return scheduleManager.removeSchedule(jobName,project);
+        }
     }
 
     private boolean checkCronExpression(String cronExpression) {

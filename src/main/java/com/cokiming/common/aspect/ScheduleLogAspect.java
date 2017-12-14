@@ -3,6 +3,7 @@ package com.cokiming.common.aspect;
 import com.cokiming.common.annotation.LogInfo;
 import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.entity.ScheduleLog;
+import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,7 +22,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author wuyiming
- *         Created by wuyiming on 2017/12/7.
+ * Created by wuyiming on 2017/12/7.
  */
 @Component
 @Aspect
@@ -31,6 +32,9 @@ public class ScheduleLogAspect {
 
     @Autowired
     private ScheduleService scheduleService;
+
+    @Autowired
+    private ScheduleManager scheduleManager;
 
     @Pointcut("@annotation(com.cokiming.common.annotation.LogInfo)")
     public void logInfoPointCut() {
@@ -69,11 +73,20 @@ public class ScheduleLogAspect {
             Scheduled scheduled = method.getAnnotation(Scheduled.class);
             log.setMethodName(methodName);
             log.setExecuteResult(null);
-            log.setJobName(ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron()));
+            String jobName = ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron());
+            log.setJobName(jobName);
             if (e != null) {
+                ScheduleLog origin = scheduleService.selectLatestOneByJobName(jobName);
+                int failTimes = 0;
+                if (origin != null) {
+                    failTimes = origin.getFailTimes() + 1;
+                }
                 log.setException(e.getMessage());
                 log.setExecuteResult(ScheduleLog.RESULT_FAIL);
+                log.setReturnContent(null);
+                log.setFailTimes(failTimes);
             } else {
+                log.setFailTimes(0);
                 log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
             }
         } catch (Exception ex) {
