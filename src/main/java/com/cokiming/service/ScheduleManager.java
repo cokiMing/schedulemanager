@@ -121,7 +121,7 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             ScheduleLog origin = scheduleService.selectLatestOneByJobName(jobName);
-            int failTimes = 0;
+            int failTimes = 1;
             if (origin != null) {
                 failTimes = origin.getFailTimes() + 1;
             }
@@ -135,7 +135,6 @@ public class ScheduleManager {
             }
         }
 
-        logger.info(log);
         scheduleService.saveScheduleLog(log);
     }
 

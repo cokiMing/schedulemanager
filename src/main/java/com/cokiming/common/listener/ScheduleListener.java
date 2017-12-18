@@ -36,6 +36,7 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         try {
             for (ScheduleJob scheduleJob : scheduleJobs) {
                 scheduleManager.startSchedule(scheduleJob);
+                logger.info("启动任务: " + scheduleJob.getJobName());
             }
         } catch (Exception e) {
             logger.error("启动定时任务失败");
