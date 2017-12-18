@@ -73,19 +73,13 @@ public class ScheduleManager {
         return Result.success(jobName);
     }
 
-    public Result updateSchedule(String url, String originCronExpression, String project, String newCronExpression) {
-        Result result = removeSchedule(url, originCronExpression, project);
+    public Result updateSchedule(String jobName, String project, String newCronExpression, String url, String method) {
+        Result result = removeSchedule(jobName, project);
         if (!result.isSuccess()) {
             return result;
         }
 
-        ScheduleJob job = scheduleService.selectOneByModel(new ScheduleJob());
-        return createSchedule(url,job.getRequestMethod(),newCronExpression,project);
-    }
-
-    public Result removeSchedule(String url, String cronExpression, String project) {
-        String jobName = createJobName(url,project,cronExpression);
-        return removeSchedule(jobName,project);
+        return createSchedule(url, method, newCronExpression, project);
     }
 
     public Result removeSchedule(String jobName, String project) {

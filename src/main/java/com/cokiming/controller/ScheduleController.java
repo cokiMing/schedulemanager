@@ -2,6 +2,7 @@ package com.cokiming.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.pojo.Result;
+import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.dao.entity.ScheduleLog;
 import com.cokiming.service.ScheduleManager;
@@ -68,7 +69,7 @@ public class ScheduleController {
      * 获取活动中的定时任务
      * @return
      */
-    @RequestMapping(value = "/getAvailableJobs",method = RequestMethod.GET)
+    @RequestMapping(value = "/getRunningJobs",method = RequestMethod.GET)
     public Result getAvailableJobs() {
         return Result.success(scheduleService.selectAvailableJobs());
     }
@@ -83,6 +84,37 @@ public class ScheduleController {
                                  @RequestParam(defaultValue = "20") int pageSize) {
         List<ScheduleLog> logs = scheduleService.selectLogsByPage(jobName, pageNo, pageSize);
         return Result.success(logs);
+    }
+
+    /**
+     * 更新任务的运行时间
+     * @return
+     */
+    @RequestMapping(value = "/updateJobById",method = RequestMethod.PUT)
+    public Result updateJobById(@RequestBody JSONObject requestObject) {
+        String id = requestObject.getString("id");
+        String cron = requestObject.getString("cronExpression");
+        if (cron == null) {
+            Date targetTime = requestObject.getDate("targetTime");
+            if (targetTime != null && targetTime.after(new Date())) {
+                cron = ScheduleUtil.convertDateToCron(targetTime);
+            } else {
+                return Result.fail("执行时间异常");
+            }
+        }
+
+        ScheduleJob scheduleJob = scheduleService.selectJobById(id);
+        if (scheduleJob == null) {
+            return Result.fail("没有找到任务");
+        }
+
+        return scheduleManager.updateSchedule(
+                scheduleJob.getJobName(),
+                scheduleJob.getProject(),
+                cron,
+                scheduleJob.getUrl(),
+                scheduleJob.getRequestMethod()
+        );
     }
 
     /**
