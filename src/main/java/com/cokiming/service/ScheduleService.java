@@ -83,6 +83,18 @@ public class ScheduleService {
         return scheduleLogDao.selectByPage(jobName,offset,limit);
     }
 
+    public void updateJobCron(String jobName,String cron,String newJobName) {
+        ScheduleJob condition = new ScheduleJob();
+        condition.setJobName(jobName);
+        condition.setStatus(ScheduleJob.STATUS_CREATE);
+
+        ScheduleJob model = new ScheduleJob();
+        model.setCronExpression(cron);
+        model.setJobName(newJobName);
+
+        scheduleJobDao.updateByCondition(condition,model);
+    }
+
     public ScheduleLog selectOneByModel(ScheduleLog scheduleLog) {
         return new ScheduleLog();
     }

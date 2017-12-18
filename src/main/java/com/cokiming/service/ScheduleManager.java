@@ -8,12 +8,14 @@ import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.dao.entity.ScheduleLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.CronExpression;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import static com.cokiming.common.util.ScheduleUtil.createJobName;
@@ -56,10 +58,18 @@ public class ScheduleManager {
     }
 
     public Result createSchedule(String url, String method, String cronExpression, String project) {
+        Result result = createScheduleTask(url, method, cronExpression, project);
+        if (result.isSuccess()) {
+            saveScheduleJob(url,method,cronExpression,project);
+        }
+
+        return result;
+    }
+
+    public Result createScheduleTask(String url, String method, String cronExpression, String project) {
         String jobName = createJobName(url,project,cronExpression);
         try {
             ScheduleUtil.createSchedule(this.getClass(),cronExpression,jobName,"executeMethod",url,project,method);
-            saveScheduleJob(url,method,cronExpression,project);
         } catch (ObjectAlreadyExistsException oaee) {
             logger.error(oaee.getMessage());
             return Result.fail("该定时任务已创建");
@@ -74,12 +84,21 @@ public class ScheduleManager {
     }
 
     public Result updateSchedule(String jobName, String project, String newCronExpression, String url, String method) {
-        Result result = removeSchedule(jobName, project);
-        if (!result.isSuccess()) {
-            return result;
+        //停止并移除核心调度器中的任务
+        try {
+            ScheduleUtil.removeSchedule(jobName,project);
+        } catch (Exception e) {
+            return Result.fail("定时任务移除失败");
         }
 
-        return createSchedule(url, method, newCronExpression, project);
+        //更新任务信息
+        Result result = createScheduleTask(url, method, newCronExpression, project);
+        if (result.isSuccess()) {
+            String newJobName = ScheduleUtil.createJobName(url,project,newCronExpression);
+            scheduleService.updateJobCron(jobName, newCronExpression, newJobName);
+        }
+
+        return result;
     }
 
     public Result removeSchedule(String jobName, String project) {
@@ -131,13 +150,27 @@ public class ScheduleManager {
             log.setExecuteResult(ScheduleLog.RESULT_FAIL);
             log.setReturnContent(null);
             log.setFailTimes(failTimes);
-            //失败超过最大限制次数即删除任务
-            if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES) {
+            //失败超过最大限制次数或任务声明周期结束即删除任务
+            if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES || checkCronExpire(cronExpression)) {
                 fireSchedule(jobName,project);
             }
         }
 
         scheduleService.saveScheduleLog(log);
+    }
+
+    private boolean checkCronExpire(String cron) {
+        try {
+            CronExpression cronExpression = new CronExpression(cron);
+            Date after = cronExpression.getTimeAfter(new Date());
+            if (after == null) {
+                return true;
+            }
+        } catch (ParseException e) {
+            return true;
+        }
+
+        return false;
     }
 
     private void saveScheduleJob(String url, String method, String cronExpression, String project) {
