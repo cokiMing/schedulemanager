@@ -32,6 +32,12 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         super.save(scheduleJob);
     }
 
+    public ScheduleJob selectById(String id) {
+        Query<ScheduleJob> query = getNewQuery();
+        query.field("id").equal(new ObjectId(id));
+        return super.findOne(query);
+    }
+
     public List<ScheduleJob> selectByModel(ScheduleJob scheduleJob) {
         Query<ScheduleJob> query = getNewQuery();
         if (scheduleJob.getStatus() != null) {
@@ -39,6 +45,15 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         }
 
         return super.find(query).asList();
+    }
+
+    public ScheduleJob selectOneByModel(ScheduleJob scheduleJob) {
+        Query<ScheduleJob> query = getNewQuery();
+        if (scheduleJob.getStatus() != null) {
+            query.field("status").equal(scheduleJob.getStatus());
+        }
+
+        return super.findOne(query);
     }
 
     public void updateByCondition(ScheduleJob condition,ScheduleJob model) {

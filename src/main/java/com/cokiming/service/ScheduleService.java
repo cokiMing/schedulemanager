@@ -1,16 +1,18 @@
 package com.cokiming.service;
 
+import com.cokiming.common.annotation.LogInfo;
+import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.ScheduleJobDao;
 import com.cokiming.dao.ScheduleLogDao;
 import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.dao.entity.ScheduleLog;
-import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -42,8 +44,43 @@ public class ScheduleService {
         return scheduleLogDao.selectLatestByJobName(jobName);
     }
 
+    public ScheduleJob selectJobById(String id) {
+        return scheduleJobDao.selectById(id);
+    }
+
     public List<ScheduleJob> selectByModel(ScheduleJob scheduleJob) {
         return scheduleJobDao.selectByModel(scheduleJob);
+    }
+
+    public List<ScheduleJob> selectAvailableJobs() {
+        //数据库已存的任务
+        ScheduleJob model = new ScheduleJob();
+        model.setStatus(ScheduleJob.STATUS_CREATE);
+        List<ScheduleJob> jobList = selectByModel(model);
+
+        //manager中写死的任务
+        Class<ScheduleManager> managerClass = ScheduleManager.class;
+        Method[] methods = managerClass.getDeclaredMethods();
+        for (Method method : methods) {
+            LogInfo logInfo = method.getAnnotation(LogInfo.class);
+            Scheduled scheduled = method.getAnnotation(Scheduled.class);
+            if (logInfo != null) {
+                ScheduleJob job = new ScheduleJob();
+                job.setUrl(logInfo.url());
+                job.setProject(logInfo.project());
+                job.setCronExpression(scheduled.cron());
+                job.setJobName(ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron()));
+                jobList.add(job);
+            }
+        }
+
+        return jobList;
+    }
+
+    public List<ScheduleLog> selectLogsByPage(String jobName,int pageNo,int pageSize) {
+        int offset = (pageNo - 1) * pageSize;
+        int limit = pageSize;
+        return scheduleLogDao.selectByPage(jobName,offset,limit);
     }
 
     public ScheduleLog selectOneByModel(ScheduleLog scheduleLog) {

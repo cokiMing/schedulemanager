@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author wuyiming
@@ -34,6 +35,16 @@ public class ScheduleLogDao extends BasicDAO<ScheduleLog, ObjectId> {
         query.order("-executeTime");
 
         return super.findOne(query);
+    }
+
+    public List<ScheduleLog> selectByPage(String jobName,int offset,int limit) {
+        Query<ScheduleLog> query = getNewQuery();
+        query.field("jobName").equal(jobName);
+        query.order("-executeTime");
+        query.offset(offset);
+        query.limit(limit);
+
+        return super.find(query).asList();
     }
 
     private Query<ScheduleLog> getNewQuery() {

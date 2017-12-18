@@ -3,14 +3,12 @@ package com.cokiming.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.pojo.Result;
 import com.cokiming.dao.entity.ScheduleJob;
+import com.cokiming.dao.entity.ScheduleLog;
 import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -72,35 +70,36 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/getAvailableJobs",method = RequestMethod.GET)
     public Result getAvailableJobs() {
-        ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_CREATE);
-        List<ScheduleJob> jobList = scheduleService.selectByModel(model);
-        return Result.success(jobList);
+        return Result.success(scheduleService.selectAvailableJobs());
+    }
+
+    /**
+     * 获取定时任务的运行日志
+     * @return
+     */
+    @RequestMapping(value = "/getJobLogsByJobName",method = RequestMethod.GET)
+    public Result getJobLogsById(@RequestParam String jobName,
+                                 @RequestParam(defaultValue = "1") int pageNo,
+                                 @RequestParam(defaultValue = "20") int pageSize) {
+        List<ScheduleLog> logs = scheduleService.selectLogsByPage(jobName, pageNo, pageSize);
+        return Result.success(logs);
     }
 
     /**
      * 移除定时任务
-     * @param jsonObject
      * @return
      */
-    @RequestMapping(value = "/removeSchedule",method = RequestMethod.POST)
-    public Result deleteSchedule(@RequestBody JSONObject jsonObject) {
-        String jobName = jsonObject.getString("jobName");
-        String project = jsonObject.getString("project");
-        if (project == null) {
-            return Result.fail("project为空");
+    @RequestMapping(value = "/removeSchedule",method = RequestMethod.DELETE)
+    public Result deleteSchedule(@RequestParam String id) {
+        if (id == null) {
+            return Result.fail("id为空");
+        }
+        ScheduleJob scheduleJob = scheduleService.selectJobById(id);
+        if (scheduleJob == null) {
+            return Result.fail("没有找到定时任务");
         }
 
-        if (jobName == null) {
-            String cron = jsonObject.getString("cronExpression");
-            if (!checkCronExpression(cron)) {
-                return Result.fail("cron表达式格式不正确");
-            }
-            String url = jsonObject.getString("url");
-            return scheduleManager.removeSchedule(url,cron,project);
-        } else {
-            return scheduleManager.removeSchedule(jobName,project);
-        }
+        return scheduleManager.removeSchedule(scheduleJob.getJobName(),scheduleJob.getProject());
     }
 
     private boolean checkCronExpression(String cronExpression) {
