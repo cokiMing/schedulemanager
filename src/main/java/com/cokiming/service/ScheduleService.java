@@ -54,6 +54,21 @@ public class ScheduleService {
         return new ScheduleJob();
     }
 
+    public ScheduleJob getDeathJob(String jobName) {
+        return scheduleJobDao.selectDeathJob(jobName);
+    }
+
+    public void resumeSchedule(String jobName) {
+        ScheduleJob condition = new ScheduleJob();
+        condition.setJobName(jobName);
+
+        ScheduleJob model = new ScheduleJob();
+        model.setStatus(ScheduleJob.STATUS_CREATE);
+
+        scheduleJobDao.updateByCondition(condition,model);
+        logger.info("恢复了："+ jobName);
+    }
+
     public void removeJob(String jobName) {
         ScheduleJob condition = new ScheduleJob();
         condition.setJobName(jobName);

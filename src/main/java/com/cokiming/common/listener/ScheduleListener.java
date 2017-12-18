@@ -5,6 +5,7 @@ import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -33,13 +34,17 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         model.setStatus(ScheduleJob.STATUS_CREATE);
         List<ScheduleJob> scheduleJobs = scheduleService.selectByModel(model);
 
-        try {
-            for (ScheduleJob scheduleJob : scheduleJobs) {
+        for (ScheduleJob scheduleJob : scheduleJobs) {
+            try {
                 scheduleManager.startSchedule(scheduleJob);
                 logger.info("启动任务: " + scheduleJob.getJobName());
+            } catch (SchedulerException e) {
+                //启动失败的过期任务直接清除
+                scheduleManager.fireSchedule(scheduleJob.getJobName(),scheduleJob.getProject());
+                logger.error("启动失败: " + e.getMessage());
+            } catch (Exception e) {
+                logger.error("启动失败: " + e.getMessage());
             }
-        } catch (Exception e) {
-            logger.error("启动定时任务失败");
         }
 
         logger.info("启动备份定时任务完成");

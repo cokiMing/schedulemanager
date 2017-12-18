@@ -30,43 +30,6 @@ public class SpringMongoConfig {
     @Value("${cokiming.mongo.dbname}")
     private String dbName;
 
-    /**
-     * <bean id="mongoClient" class="com.mrwind.mongo.morphia.MongoFactoryBean">
-     <!-- 设定服务器列表，默认为localhost:27017 -->
-     <property name="serverStrings">
-     <array>
-     <value>${mvn.mongo.server.host}</value>
-     </array>
-     </property>
-     <property name="username" value="${mvn.mongo.server.user}" />
-     <property name="password" value="${mvn.mongo.server.pwd}" />
-     <property name="authDb" value="${mvn.mongo.server.authDb}" />
-     </bean>
-
-     <!-- 使用工厂创建morphia实例，同时完成类映射操作 -->
-     <bean id="morphia" class="com.mrwind.mongo.morphia.MorphiaFactoryBean">
-     <!-- 指定要扫描的POJO包路径 -->
-     <property name="mapPackages">
-     <array>
-     <value>com.mrwind.mongo.pojo</value>
-     </array>
-     </property>
-     </bean>
-
-     <!-- 使用工厂创建datastore，同时完成index和caps的确认操作 -->
-     <bean id="windlog" class="com.mrwind.mongo.morphia.DatastoreFactoryBean">
-     <property name="morphia" ref="morphia" />
-     <property name="mongo" ref="mongoClient" />
-
-     <!-- collection的名称 -->
-     <property name="dbName" value="${mvn.mongo.server.dbName}" />
-
-     <!-- 是否进行index和caps的确认操作，默认为flase -->
-     <property name="toEnsureIndexes" value="false" />
-     <property name="toEnsureCaps" value="false" />
-     </bean>
-     */
-
     @Bean("mongoClient")
     public MongoFactoryBean mongoClient() {
         MongoFactoryBean factoryBean = new MongoFactoryBean();

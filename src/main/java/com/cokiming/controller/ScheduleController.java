@@ -2,8 +2,9 @@ package com.cokiming.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.pojo.Result;
+import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.service.ScheduleManager;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+import com.cokiming.service.ScheduleService;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.regex.Pattern;
+import java.util.List;
 
 /**
  * @author wuyiming
@@ -24,6 +25,9 @@ public class ScheduleController {
 
     @Autowired
     private ScheduleManager scheduleManager;
+
+    @Autowired
+    private ScheduleService scheduleService;
 
     /**
      * 创建一个预定时间点执行的任务
@@ -60,6 +64,18 @@ public class ScheduleController {
         String project = jsonObject.getString("project");
 
         return scheduleManager.createSchedule(url,method,cron,project);
+    }
+
+    /**
+     * 获取活动中的定时任务
+     * @return
+     */
+    @RequestMapping(value = "/getAvailableJobs",method = RequestMethod.GET)
+    public Result getAvailableJobs() {
+        ScheduleJob model = new ScheduleJob();
+        model.setStatus(ScheduleJob.STATUS_CREATE);
+        List<ScheduleJob> jobList = scheduleService.selectByModel(model);
+        return Result.success(jobList);
     }
 
     /**

@@ -8,6 +8,8 @@ import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.dao.entity.ScheduleLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.quartz.ObjectAlreadyExistsException;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -55,11 +57,21 @@ public class ScheduleManager {
 
     public Result createSchedule(String url, String method, String cronExpression, String project) {
         String jobName = createJobName(url,project,cronExpression);
+        ScheduleJob scheduleJob = scheduleService.getDeathJob(jobName);
+        if (scheduleJob != null) {
+            scheduleService.resumeSchedule(jobName);
+        }
         try {
             ScheduleUtil.createSchedule(this.getClass(),cronExpression,jobName,"executeMethod",url,project,method);
             saveScheduleJob(url,method,cronExpression,project);
+        } catch (ObjectAlreadyExistsException oaee) {
+            logger.error(oaee.getMessage());
+            return Result.fail("该定时任务已创建");
+        } catch (SchedulerException se) {
+            logger.error(se.getMessage());
+            return Result.fail("该cron表达式指定时间已过期");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return Result.fail("定时任务创建异常");
         }
         return Result.success(jobName);
