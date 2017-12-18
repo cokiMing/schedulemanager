@@ -57,10 +57,6 @@ public class ScheduleManager {
 
     public Result createSchedule(String url, String method, String cronExpression, String project) {
         String jobName = createJobName(url,project,cronExpression);
-        ScheduleJob scheduleJob = scheduleService.getDeathJob(jobName);
-        if (scheduleJob != null) {
-            scheduleService.resumeSchedule(jobName);
-        }
         try {
             ScheduleUtil.createSchedule(this.getClass(),cronExpression,jobName,"executeMethod",url,project,method);
             saveScheduleJob(url,method,cronExpression,project);
