@@ -84,17 +84,6 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         super.update(query,update);
     }
 
-    public ScheduleJob selectDeathJob(String jobName) {
-        Query<ScheduleJob> query = getNewQuery();
-        query.field("jobName").equal(jobName);
-        query.or(
-                query.criteria("status").equal(ScheduleJob.STATUS_DELETE),
-                query.criteria("status").equal(ScheduleJob.STATUS_FIRED)
-        );
-
-        return super.findOne(query);
-    }
-
     private Query<ScheduleJob> getNewQuery() {
         return super.getDs().createQuery(ScheduleJob.class);
     }

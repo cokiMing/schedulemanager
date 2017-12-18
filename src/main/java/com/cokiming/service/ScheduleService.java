@@ -58,9 +58,9 @@ public class ScheduleService {
         model.setStatus(ScheduleJob.STATUS_CREATE);
         List<ScheduleJob> jobList = selectByModel(model);
 
-        //manager中写死的任务
-        Class<ScheduleManager> managerClass = ScheduleManager.class;
-        Method[] methods = managerClass.getDeclaredMethods();
+        //holder中写死的任务
+        Class<ScheduleHolder> holderClass = ScheduleHolder.class;
+        Method[] methods = holderClass.getDeclaredMethods();
         for (Method method : methods) {
             LogInfo logInfo = method.getAnnotation(LogInfo.class);
             Scheduled scheduled = method.getAnnotation(Scheduled.class);
@@ -101,10 +101,6 @@ public class ScheduleService {
 
     public ScheduleJob selectOneByModel(ScheduleJob scheduleJob) {
         return new ScheduleJob();
-    }
-
-    public ScheduleJob getDeathJob(String jobName) {
-        return scheduleJobDao.selectDeathJob(jobName);
     }
 
     public void resumeSchedule(String jobName) {

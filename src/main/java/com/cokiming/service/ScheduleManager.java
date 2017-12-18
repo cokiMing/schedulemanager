@@ -1,6 +1,5 @@
 package com.cokiming.service;
 
-import com.cokiming.common.annotation.LogInfo;
 import com.cokiming.common.http.HttpUtil;
 import com.cokiming.common.pojo.Result;
 import com.cokiming.common.util.ScheduleUtil;
@@ -12,7 +11,6 @@ import org.quartz.CronExpression;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -31,14 +29,6 @@ public class ScheduleManager {
 
     @Autowired
     private ScheduleService scheduleService;
-
-    @Scheduled(cron = "0 0/2 * * * ?")
-    @LogInfo(url = "www.baidu.com",description = "test schedule",project = "schedule")
-    public String test() {
-        logger.info("test...");
-        String result = "ok！";
-        return result;
-    }
 
     public void startSchedule(ScheduleJob scheduleJob) throws Exception {
         ScheduleUtil.createSchedule(
@@ -167,6 +157,7 @@ public class ScheduleManager {
                 return true;
             }
         } catch (ParseException e) {
+            logger.error(e.getMessage());
             return true;
         }
 

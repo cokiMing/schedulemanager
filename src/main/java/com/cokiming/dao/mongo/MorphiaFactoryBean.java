@@ -4,6 +4,7 @@ import org.mongodb.morphia.Morphia;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 /**
+ * @author wuyiming
  * Created by admin on 16/3/15.
  */
 public class MorphiaFactoryBean extends AbstractFactoryBean<Morphia> {
