@@ -1,12 +1,17 @@
 package com.cokiming.dao.entity;
 
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+
 import java.util.Date;
 
 /**
  * @author wuyiming
  * Created by wuyiming on 2017/12/8.
  */
+@Entity(noClassnameStored = true)
 public class ScheduleJob {
+    @Id
     /**定时任务id*/
     private String id;
     /**接口地址*/

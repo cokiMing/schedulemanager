@@ -28,12 +28,24 @@ public class ScheduleManager {
     @Autowired
     private ScheduleService scheduleService;
 
-    @Scheduled(cron = "0/20 * * * * ?")
+    @Scheduled(cron = "0 0/2 * * * ?")
     @LogInfo(url = "www.baidu.com",description = "test schedule",project = "schedule")
     public String test() {
         logger.info("test...");
         String result = "ok！";
         return result;
+    }
+
+    public void startSchedule(ScheduleJob scheduleJob) throws Exception {
+        ScheduleUtil.createSchedule(
+                this.getClass(),
+                scheduleJob.getCronExpression(),
+                scheduleJob.getJobName(),
+                "executeMethod",
+                scheduleJob.getUrl(),
+                scheduleJob.getProject(),
+                scheduleJob.getRequestMethod()
+        );
     }
 
     public Result createSchedule(String url, String method, Date targetTime, String project) {
@@ -50,7 +62,7 @@ public class ScheduleManager {
             e.printStackTrace();
             return Result.fail("定时任务创建异常");
         }
-        return Result.success();
+        return Result.success(jobName);
     }
 
     public Result updateSchedule(String url, String originCronExpression, String project, String newCronExpression) {
@@ -72,6 +84,16 @@ public class ScheduleManager {
         try {
             ScheduleUtil.removeSchedule(jobName,project);
             scheduleService.removeJob(jobName);
+        } catch (Exception e) {
+            return Result.fail("定时任务移除失败");
+        }
+        return Result.success();
+    }
+
+    public Result fireSchedule(String jobName, String project) {
+        try {
+            ScheduleUtil.removeSchedule(jobName,project);
+            scheduleService.fireJob(jobName);
         } catch (Exception e) {
             return Result.fail("定时任务移除失败");
         }
@@ -109,7 +131,7 @@ public class ScheduleManager {
             log.setFailTimes(failTimes);
             //失败超过最大限制次数即删除任务
             if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES) {
-                removeSchedule(url,cronExpression,project);
+                fireSchedule(jobName,project);
             }
         }
 
