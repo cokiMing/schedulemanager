@@ -140,7 +140,7 @@ public class ScheduleManager {
             log.setExecuteResult(ScheduleLog.RESULT_FAIL);
             log.setReturnContent(null);
             log.setFailTimes(failTimes);
-            //失败超过最大限制次数或任务声明周期结束即删除任务
+            //失败超过最大限制次数或任务生命周期结束即删除任务
             if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES || checkCronExpire(cronExpression)) {
                 fireSchedule(jobName,project);
             }

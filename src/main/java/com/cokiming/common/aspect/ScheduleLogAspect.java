@@ -33,9 +33,6 @@ public class ScheduleLogAspect {
     @Autowired
     private ScheduleService scheduleService;
 
-    @Autowired
-    private ScheduleManager scheduleManager;
-
     @Pointcut("@annotation(com.cokiming.common.annotation.LogInfo)")
     public void logInfoPointCut() {
 
@@ -63,7 +60,7 @@ public class ScheduleLogAspect {
         Object target = joinPoint.getTarget();
         //拦截的方法名称
         String methodName = joinPoint.getSignature().getName();
-        //拦截的放参数类型
+        //拦截的方法参数类型
         Class[] parameterTypes = ((MethodSignature) joinPoint.getSignature()).getMethod().getParameterTypes();
 
         ScheduleLog log = new ScheduleLog();
