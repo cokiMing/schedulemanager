@@ -35,15 +35,31 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/createSchedule",method = RequestMethod.POST)
     public Result createScheduleTask(@RequestBody JSONObject jsonObject) {
-        String url = jsonObject.getString("url");
-        String method = jsonObject.getString("method");
         Date targetTime = jsonObject.getDate("targetTime");
-        String project = jsonObject.getString("project");
-
         if (targetTime.before(new Date())) {
             return Result.fail("预定执行时间应当晚于当前");
         }
-        return scheduleManager.createSchedule(url,method,targetTime,project);
+
+        String url = jsonObject.getString("url");
+        if (url == null) {
+            return Result.fail("接口地址为空");
+        }
+
+        String name = jsonObject.getString("name");
+        if (name == null) {
+            return Result.fail("任务名称为空");
+        }
+
+        String method = jsonObject.getString("method");
+        if (method == null) {
+            return Result.fail("请求方式为空");
+        }
+
+        String project = jsonObject.getString("project");
+        if (project == null) {
+            return Result.fail("项目为空");
+        }
+        return scheduleManager.createSchedule(url,method,targetTime,project,name);
     }
 
     /**
@@ -59,10 +75,26 @@ public class ScheduleController {
         }
 
         String url = jsonObject.getString("url");
-        String method = jsonObject.getString("method");
-        String project = jsonObject.getString("project");
+        if (url == null) {
+            return Result.fail("接口地址为空");
+        }
 
-        return scheduleManager.createSchedule(url,method,cron,project);
+        String name = jsonObject.getString("name");
+        if (name == null) {
+            return Result.fail("任务名称为空");
+        }
+
+        String method = jsonObject.getString("method");
+        if (method == null) {
+            return Result.fail("请求方式为空");
+        }
+
+        String project = jsonObject.getString("project");
+        if (project == null) {
+            return Result.fail("项目为空");
+        }
+
+        return scheduleManager.createSchedule(url,method,cron,project,name);
     }
 
     /**

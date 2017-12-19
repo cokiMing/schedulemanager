@@ -42,15 +42,15 @@ public class ScheduleManager {
         );
     }
 
-    public Result createSchedule(String url, String method, Date targetTime, String project) {
+    public Result createSchedule(String url, String method, Date targetTime, String project,String name) {
         String cron = ScheduleUtil.convertDateToCron(targetTime);
-        return createSchedule(url,method,cron,project);
+        return createSchedule(url,method,cron,project,name);
     }
 
-    public Result createSchedule(String url, String method, String cronExpression, String project) {
+    public Result createSchedule(String url, String method, String cronExpression, String project,String name) {
         Result result = createScheduleTask(url, method, cronExpression, project);
         if (result.isSuccess()) {
-            saveScheduleJob(url,method,cronExpression,project);
+            saveScheduleJob(url,method,cronExpression,project,name);
         }
 
         return result;
@@ -164,13 +164,14 @@ public class ScheduleManager {
         return false;
     }
 
-    private void saveScheduleJob(String url, String method, String cronExpression, String project) {
+    private void saveScheduleJob(String url, String method, String cronExpression, String project, String name) {
         ScheduleJob job = new ScheduleJob();
         job.setRequestMethod(method);
         job.setJobName(createJobName(url,project,cronExpression));
         job.setCronExpression(cronExpression);
         job.setProject(project);
         job.setUrl(url);
+        job.setName(name);
         job.setStatus(ScheduleJob.STATUS_CREATE);
 
         scheduleService.saveScheduleJob(job);

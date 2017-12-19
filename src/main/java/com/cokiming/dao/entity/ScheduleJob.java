@@ -20,6 +20,8 @@ public class ScheduleJob {
     private String requestMethod;
     /**所属项目*/
     private String project;
+    /**任务名称*/
+    private String name;
     /**任务描述*/
     private String description;
     /**定时任务对应的cron表达式*/
@@ -117,6 +119,14 @@ public class ScheduleJob {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
