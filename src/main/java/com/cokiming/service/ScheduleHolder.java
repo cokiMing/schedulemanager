@@ -16,7 +16,7 @@ public class ScheduleHolder {
     private Log logger = LogFactory.getLog(this.getClass());
 
     @Scheduled(cron = "0 0/2 * * * ?")
-    @LogInfo(url = "www.baidu.com",description = "test schedule",project = "schedule")
+    @LogInfo(name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
     public String test() {
         logger.info("test...");
         String result = "ok！";

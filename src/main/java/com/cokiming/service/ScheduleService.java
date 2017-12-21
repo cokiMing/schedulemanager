@@ -66,9 +66,11 @@ public class ScheduleService {
             Scheduled scheduled = method.getAnnotation(Scheduled.class);
             if (logInfo != null) {
                 ScheduleJob job = new ScheduleJob();
+                job.setName(logInfo.name());
                 job.setUrl(logInfo.url());
                 job.setProject(logInfo.project());
                 job.setCronExpression(scheduled.cron());
+                job.setDescription(logInfo.description());
                 job.setJobName(ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron()));
                 jobList.add(job);
             }

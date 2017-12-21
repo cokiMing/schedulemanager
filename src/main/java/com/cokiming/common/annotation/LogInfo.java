@@ -11,6 +11,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface LogInfo {
 
+    String name();
+
     String url();
 
     String description();
