@@ -59,7 +59,9 @@ public class ScheduleController {
         if (project == null) {
             return Result.fail("项目为空");
         }
-        return scheduleManager.createSchedule(url,method,targetTime,project,name);
+
+        String description = jsonObject.getString("description");
+        return scheduleManager.createSchedule(url,method,targetTime,project,name,description);
     }
 
     /**
@@ -94,7 +96,8 @@ public class ScheduleController {
             return Result.fail("项目为空");
         }
 
-        return scheduleManager.createSchedule(url,method,cron,project,name);
+        String description = jsonObject.getString("description");
+        return scheduleManager.createSchedule(url,method,cron,project,name,description);
     }
 
     /**
@@ -107,6 +110,15 @@ public class ScheduleController {
     }
 
     /**
+     * 获取被系统杀死的定时任务
+     * @return
+     */
+    @RequestMapping(value = "/getFiredJobs",method = RequestMethod.GET)
+    public Result getFiredJobs() {
+        return Result.success(scheduleService.selectFiredJobs());
+    }
+
+    /**
      * 获取定时任务的运行日志
      * @return
      */
@@ -114,8 +126,7 @@ public class ScheduleController {
     public Result getJobLogsById(@RequestParam String jobName,
                                  @RequestParam(defaultValue = "1") int pageNo,
                                  @RequestParam(defaultValue = "20") int pageSize) {
-        List<ScheduleLog> logs = scheduleService.selectLogsByPage(jobName, pageNo, pageSize);
-        return Result.success(logs);
+        return scheduleService.selectLogsByPage(jobName, pageNo, pageSize);
     }
 
     /**
@@ -140,12 +151,14 @@ public class ScheduleController {
             return Result.fail("没有找到任务");
         }
 
+        String description = requestObject.getString("description");
         return scheduleManager.updateSchedule(
                 scheduleJob.getJobName(),
                 scheduleJob.getProject(),
                 cron,
                 scheduleJob.getUrl(),
-                scheduleJob.getRequestMethod()
+                scheduleJob.getRequestMethod(),
+                description
         );
     }
 

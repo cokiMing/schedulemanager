@@ -1,6 +1,8 @@
 package com.cokiming.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.annotation.LogInfo;
+import com.cokiming.common.pojo.Result;
 import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.ScheduleJobDao;
 import com.cokiming.dao.ScheduleLogDao;
@@ -79,13 +81,28 @@ public class ScheduleService {
         return jobList;
     }
 
-    public List<ScheduleLog> selectLogsByPage(String jobName,int pageNo,int pageSize) {
-        int offset = (pageNo - 1) * pageSize;
-        int limit = pageSize;
-        return scheduleLogDao.selectByPage(jobName,offset,limit);
+    public List<ScheduleJob> selectFiredJobs() {
+        //数据库已存的任务
+        ScheduleJob model = new ScheduleJob();
+        model.setStatus(ScheduleJob.STATUS_FIRED);
+        List<ScheduleJob> jobList = selectByModel(model);
+
+        return jobList;
     }
 
-    public void updateJobCron(String jobName,String cron,String newJobName) {
+    public Result selectLogsByPage(String jobName, int pageNo, int pageSize) {
+        int offset = (pageNo - 1) * pageSize;
+        int limit = pageSize;
+        long num = scheduleLogDao.countByJobName(jobName);
+        List<ScheduleLog> scheduleLogs = scheduleLogDao.selectByPage(jobName, offset, limit);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("pageNum",(num - 1)/pageSize + 1);
+        jsonObject.put("logList",scheduleLogs);
+
+        return Result.success(jsonObject);
+    }
+
+    public void updateJobCron(String jobName,String cron,String newJobName,String description) {
         ScheduleJob condition = new ScheduleJob();
         condition.setJobName(jobName);
         condition.setStatus(ScheduleJob.STATUS_CREATE);
@@ -93,6 +110,7 @@ public class ScheduleService {
         ScheduleJob model = new ScheduleJob();
         model.setCronExpression(cron);
         model.setJobName(newJobName);
+        model.setDescription(description);
 
         scheduleJobDao.updateByCondition(condition,model);
     }
