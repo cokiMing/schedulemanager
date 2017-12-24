@@ -25,11 +25,11 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         super(ds);
     }
 
-    public void saveJob(ScheduleJob scheduleJob) {
+    public String saveJob(ScheduleJob scheduleJob) {
         Date current = new Date();
         scheduleJob.setUpdateTime(current);
         scheduleJob.setCreateTime(current);
-        super.save(scheduleJob);
+        return (String)super.save(scheduleJob).getId();
     }
 
     public ScheduleJob selectById(String id) {

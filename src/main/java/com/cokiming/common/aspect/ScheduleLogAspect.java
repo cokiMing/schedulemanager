@@ -1,9 +1,7 @@
 package com.cokiming.common.aspect;
 
 import com.cokiming.common.annotation.LogInfo;
-import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.entity.ScheduleLog;
-import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,7 +13,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -67,13 +64,11 @@ public class ScheduleLogAspect {
         try{
             Method method = target.getClass().getMethod(methodName, parameterTypes);
             LogInfo logInfo = method.getAnnotation(LogInfo.class);
-            Scheduled scheduled = method.getAnnotation(Scheduled.class);
             log.setMethodName(methodName);
             log.setExecuteResult(null);
-            String jobName = ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron());
-            log.setJobName(jobName);
+            log.setJobId(logInfo.id());
             if (e != null) {
-                ScheduleLog origin = scheduleService.selectLatestOneByJobName(jobName);
+                ScheduleLog origin = scheduleService.selectLatestOneByJobId(logInfo.id());
                 int failTimes = 0;
                 if (origin != null) {
                     failTimes = origin.getFailTimes() + 1;

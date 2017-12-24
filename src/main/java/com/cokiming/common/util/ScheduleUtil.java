@@ -40,7 +40,7 @@ public class ScheduleUtil {
      * @param jobName 任务名称
      * @throws Exception
      */
-    public static void createSchedule(Class clazz,String cronExpression,String jobName,String methodName,String url,String project,String method) throws Exception {
+    public static void createSchedule(Class clazz,String cronExpression,String jobName,String methodName,String url,String project,String method,String id) throws Exception {
         //该类需要设定与类名相同的bean id
         String className = clazz.getSimpleName();
 
@@ -56,6 +56,7 @@ public class ScheduleUtil {
         jobDataAsMap.put("project",project);
         jobDataAsMap.put("method",method);
         jobDataAsMap.put("cronExpression",cronExpression);
+        jobDataAsMap.put("jobId",id);
         jobDetailFactoryBean.setJobDataAsMap(jobDataAsMap);
         jobDetailFactoryBean.afterPropertiesSet();
 

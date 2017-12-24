@@ -10,6 +10,7 @@ import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.dao.entity.ScheduleLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,13 +38,18 @@ public class ScheduleService {
         logger.info("保存了log：" + scheduleLog);
     }
 
-    public void saveScheduleJob(ScheduleJob scheduleJob) {
-        scheduleJobDao.saveJob(scheduleJob);
+    public String saveScheduleJob(ScheduleJob scheduleJob) {
+        String id = scheduleJobDao.saveJob(scheduleJob);
         logger.info("保存了job：" + scheduleJob);
+        return id;
     }
 
-    public ScheduleLog selectLatestOneByJobName(String jobName) {
-        return scheduleLogDao.selectLatestByJobName(jobName);
+    public void deleteById(String id) {
+        scheduleJobDao.deleteById(new ObjectId(id));
+    }
+
+    public ScheduleLog selectLatestOneByJobId(String jobId) {
+        return scheduleLogDao.selectLatestByJobId(jobId);
     }
 
     public ScheduleJob selectJobById(String id) {
@@ -68,6 +74,7 @@ public class ScheduleService {
             Scheduled scheduled = method.getAnnotation(Scheduled.class);
             if (logInfo != null) {
                 ScheduleJob job = new ScheduleJob();
+                job.setId(logInfo.id());
                 job.setName(logInfo.name());
                 job.setUrl(logInfo.url());
                 job.setProject(logInfo.project());
@@ -90,11 +97,11 @@ public class ScheduleService {
         return jobList;
     }
 
-    public Result selectLogsByPage(String jobName, int pageNo, int pageSize) {
+    public Result selectLogsByPage(String jobId, int pageNo, int pageSize) {
         int offset = (pageNo - 1) * pageSize;
         int limit = pageSize;
-        long num = scheduleLogDao.countByJobName(jobName);
-        List<ScheduleLog> scheduleLogs = scheduleLogDao.selectByPage(jobName, offset, limit);
+        long num = scheduleLogDao.countByJobId(jobId);
+        List<ScheduleLog> scheduleLogs = scheduleLogDao.selectByPage(jobId, offset, limit);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("pageNum",(num - 1)/pageSize + 1);
         jsonObject.put("logList",scheduleLogs);

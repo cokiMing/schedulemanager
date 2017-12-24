@@ -16,8 +16,16 @@ public class ScheduleHolder {
     private Log logger = LogFactory.getLog(this.getClass());
 
     @Scheduled(cron = "0 0/10 * * * ?")
-    @LogInfo(name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
+    @LogInfo(id = "schedule001", name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
     public String test() {
+        logger.info("test...");
+        String result = "ok！";
+        return result;
+    }
+
+    @Scheduled(cron = "0 0/10 * * * ?")
+    @LogInfo(id = "schedule002", name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
+    public String test2() {
         logger.info("test...");
         String result = "ok！";
         return result;

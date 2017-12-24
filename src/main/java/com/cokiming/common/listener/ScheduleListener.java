@@ -1,8 +1,11 @@
 package com.cokiming.common.listener;
 
+import com.cokiming.common.annotation.LogInfo;
 import com.cokiming.dao.entity.ScheduleJob;
+import com.cokiming.service.ScheduleHolder;
 import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
+import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
@@ -11,7 +14,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author wuyiming
@@ -44,6 +49,21 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
                 scheduleManager.fireSchedule(scheduleJob.getJobName(),scheduleJob.getProject());
             } catch (Exception e) {
                 logger.error("启动失败: " + e.getMessage());
+            }
+        }
+
+        //校验写死的任务中id是否有重复
+        Class<ScheduleHolder> scheduleHolderClass = ScheduleHolder.class;
+        Method[] methods = scheduleHolderClass.getDeclaredMethods();
+        Set<String> idSet = Sets.newHashSet();
+        for (Method method : methods) {
+            LogInfo logInfo = method.getAnnotation(LogInfo.class);
+            if (logInfo != null) {
+                if (idSet.contains(logInfo.id())) {
+                    throw new RuntimeException("duplicate jobId");
+                } else {
+                    idSet.add(logInfo.id());
+                }
             }
         }
 

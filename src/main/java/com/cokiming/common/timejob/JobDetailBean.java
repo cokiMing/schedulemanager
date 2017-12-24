@@ -6,7 +6,6 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 import java.lang.reflect.Method;
@@ -25,13 +24,14 @@ public class JobDetailBean extends QuartzJobBean{
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
         try {
             Object bean = SpringContext.getBean(targetObject);
-            Method m = bean.getClass().getMethod(targetMethod,String.class,String.class,String.class,String.class);
+            Method m = bean.getClass().getMethod(targetMethod,String.class,String.class,String.class,String.class,String.class);
             JobDataMap jobDataMap = context.getMergedJobDataMap();
             String url = jobDataMap.getString("url");
             String project = jobDataMap.getString("project");
             String method = jobDataMap.getString("method");
             String cronExpression = jobDataMap.getString("cronExpression");
-            m.invoke(bean,url,method,project,cronExpression);
+            String jobId = jobDataMap.getString("jobId");
+            m.invoke(bean,url,method,project,cronExpression,jobId);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e);

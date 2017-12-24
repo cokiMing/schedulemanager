@@ -23,7 +23,7 @@ public class ScheduleLog {
     /**接口或方法返回内容*/
     private String returnContent;
     /**jobName*/
-    private String jobName;
+    private String jobId;
     /**方法名*/
     private String methodName;
     /**连续失败次数*/
@@ -75,12 +75,12 @@ public class ScheduleLog {
         this.returnContent = returnContent;
     }
 
-    public String getJobName() {
-        return jobName;
+    public void setJobId(String jobId) {
+        this.jobId = jobId;
     }
 
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
+    public String getJobId() {
+        return jobId;
     }
 
     public String getMethodName() {
@@ -103,12 +103,12 @@ public class ScheduleLog {
     public String toString() {
         return "ScheduleLog{" +
                 "id='" + id + '\'' +
-                ", executeTime=" + executeTime +
-                ", executeResult='" + executeResult + '\'' +
-                ", exception='" + exception + '\'' +
-                ", returnContent='" + returnContent + '\'' +
-                ", jobName='" + jobName + '\'' +
-                ", methodName='" + methodName + '\'' +
-                '}';
-    }
+            ", executeTime=" + executeTime +
+            ", executeResult='" + executeResult + '\'' +
+            ", exception='" + exception + '\'' +
+            ", returnContent='" + returnContent + '\'' +
+            ", jobName='" + jobId + '\'' +
+            ", methodName='" + methodName + '\'' +
+            '}';
+}
 }

@@ -29,17 +29,17 @@ public class ScheduleLogDao extends BasicDAO<ScheduleLog, ObjectId> {
         super.save(scheduleLog);
     }
 
-    public ScheduleLog selectLatestByJobName(String jobName) {
+    public ScheduleLog selectLatestByJobId(String jobId) {
         Query<ScheduleLog> query = getNewQuery();
-        query.field("jobName").equal(jobName);
+        query.field("jobId").equal(jobId);
         query.order("-executeTime");
 
         return super.findOne(query);
     }
 
-    public List<ScheduleLog> selectByPage(String jobName,int offset,int limit) {
+    public List<ScheduleLog> selectByPage(String jobId,int offset,int limit) {
         Query<ScheduleLog> query = getNewQuery();
-        query.field("jobName").equal(jobName);
+        query.field("jobId").equal(jobId);
         query.order("-executeTime");
         query.offset(offset);
         query.limit(limit);
@@ -47,9 +47,9 @@ public class ScheduleLogDao extends BasicDAO<ScheduleLog, ObjectId> {
         return super.find(query).asList();
     }
 
-    public long countByJobName(String jobName) {
+    public long countByJobId(String jobId) {
         Query<ScheduleLog> query = getNewQuery();
-        query.field("jobName").equal(jobName);
+        query.field("jobId").equal(jobId);
 
         return super.find(query).countAll();
     }

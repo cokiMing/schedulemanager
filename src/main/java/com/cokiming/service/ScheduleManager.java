@@ -38,7 +38,8 @@ public class ScheduleManager {
                 "executeMethod",
                 scheduleJob.getUrl(),
                 scheduleJob.getProject(),
-                scheduleJob.getRequestMethod()
+                scheduleJob.getRequestMethod(),
+                scheduleJob.getId()
         );
     }
 
@@ -48,18 +49,19 @@ public class ScheduleManager {
     }
 
     public Result createSchedule(String url, String method, String cronExpression, String project,String name,String description) {
-        Result result = createScheduleTask(url, method, cronExpression, project);
-        if (result.isSuccess()) {
-            saveScheduleJob(url,method,cronExpression,project,name,description);
+        String id = saveScheduleJob(url, method, cronExpression, project, name, description);
+        Result result = createScheduleTask(url, method, cronExpression, project,id);
+        if (!result.isSuccess()) {
+            scheduleService.deleteById(id);
         }
 
         return result;
     }
 
-    public Result createScheduleTask(String url, String method, String cronExpression, String project) {
+    public Result createScheduleTask(String url, String method, String cronExpression, String project,String id) {
         String jobName = createJobName(url,project,cronExpression);
         try {
-            ScheduleUtil.createSchedule(this.getClass(),cronExpression,jobName,"executeMethod",url,project,method);
+            ScheduleUtil.createSchedule(this.getClass(),cronExpression,jobName,"executeMethod",url,project,method,id);
         } catch (ObjectAlreadyExistsException oaee) {
             logger.error(oaee.getMessage());
             return Result.fail("该定时任务已创建");
@@ -70,10 +72,10 @@ public class ScheduleManager {
             logger.error(e.getMessage());
             return Result.fail("定时任务创建异常");
         }
-        return Result.success(jobName);
+        return Result.success(id);
     }
 
-    public Result updateSchedule(String jobName, String project, String newCronExpression, String url, String method, String description) {
+    public Result updateSchedule(String jobName, String project, String newCronExpression, String url, String method, String description,String id) {
         //停止并移除核心调度器中的任务
         try {
             ScheduleUtil.removeSchedule(jobName,project);
@@ -82,7 +84,7 @@ public class ScheduleManager {
         }
 
         //更新任务信息
-        Result result = createScheduleTask(url, method, newCronExpression, project);
+        Result result = createScheduleTask(url, method, newCronExpression, project,id);
         if (result.isSuccess()) {
             String newJobName = ScheduleUtil.createJobName(url,project,newCronExpression);
             scheduleService.updateJobCron(jobName, newCronExpression, newJobName,description);
@@ -111,10 +113,10 @@ public class ScheduleManager {
         return Result.success();
     }
 
-    public void executeMethod(String url, String method, String project, String cronExpression) {
+    public void executeMethod(String url, String method, String project, String cronExpression,String id) {
         String jobName = createJobName(url,project,cronExpression);
         ScheduleLog log = new ScheduleLog();
-        log.setJobName(jobName);
+        log.setJobId(id);
         log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
         log.setFailTimes(0);
 
@@ -131,7 +133,7 @@ public class ScheduleManager {
                 default:log.setReturnContent("default");break;
             }
         } catch (Exception e) {
-            ScheduleLog origin = scheduleService.selectLatestOneByJobName(jobName);
+            ScheduleLog origin = scheduleService.selectLatestOneByJobId(id);
             int failTimes = 1;
             if (origin != null) {
                 failTimes = origin.getFailTimes() + 1;
@@ -164,7 +166,7 @@ public class ScheduleManager {
         return false;
     }
 
-    private void saveScheduleJob(String url, String method, String cronExpression, String project, String name,String description) {
+    private String saveScheduleJob(String url, String method, String cronExpression, String project, String name,String description) {
         ScheduleJob job = new ScheduleJob();
         job.setRequestMethod(method);
         job.setJobName(createJobName(url,project,cronExpression));
@@ -175,6 +177,6 @@ public class ScheduleManager {
         job.setDescription(description);
         job.setStatus(ScheduleJob.STATUS_CREATE);
 
-        scheduleService.saveScheduleJob(job);
+        return scheduleService.saveScheduleJob(job);
     }
 }

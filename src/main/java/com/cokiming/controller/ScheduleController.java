@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.pojo.Result;
 import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.entity.ScheduleJob;
-import com.cokiming.dao.entity.ScheduleLog;
 import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.quartz.CronExpression;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author wuyiming
@@ -122,11 +120,11 @@ public class ScheduleController {
      * 获取定时任务的运行日志
      * @return
      */
-    @RequestMapping(value = "/getJobLogsByJobName",method = RequestMethod.GET)
-    public Result getJobLogsById(@RequestParam String jobName,
+    @RequestMapping(value = "/getJobLogsByJobId",method = RequestMethod.GET)
+    public Result getJobLogsById(@RequestParam String jobId,
                                  @RequestParam(defaultValue = "1") int pageNo,
                                  @RequestParam(defaultValue = "20") int pageSize) {
-        return scheduleService.selectLogsByPage(jobName, pageNo, pageSize);
+        return scheduleService.selectLogsByPage(jobId, pageNo, pageSize);
     }
 
     /**
@@ -158,7 +156,8 @@ public class ScheduleController {
                 cron,
                 scheduleJob.getUrl(),
                 scheduleJob.getRequestMethod(),
-                description
+                description,
+                id
         );
     }
 
