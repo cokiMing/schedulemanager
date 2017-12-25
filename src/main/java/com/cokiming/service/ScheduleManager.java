@@ -75,19 +75,27 @@ public class ScheduleManager {
         return Result.success(id);
     }
 
-    public Result updateSchedule(String jobName, String project, String newCronExpression, String url, String method, String description,String id) {
+    public Result updateSchedule(ScheduleJob originJob,String newUrl,String newCron,String description) {
         //停止并移除核心调度器中的任务
         try {
-            ScheduleUtil.removeSchedule(jobName,project);
+            ScheduleUtil.removeSchedule(originJob.getJobName(),originJob.getProject());
         } catch (Exception e) {
             return Result.fail("定时任务移除失败");
         }
 
         //更新任务信息
-        Result result = createScheduleTask(url, method, newCronExpression, project,id);
+        Result result = createScheduleTask(newUrl, originJob.getRequestMethod(), newCron, originJob.getProject(),originJob.getId());
         if (result.isSuccess()) {
-            String newJobName = ScheduleUtil.createJobName(url,project,newCronExpression);
-            scheduleService.updateJobCron(jobName, newCronExpression, newJobName,description);
+            String newJobName = ScheduleUtil.createJobName(newUrl,originJob.getProject(),newCron);
+            scheduleService.updateJobCron(originJob.getId(), newCron, newJobName,description,newUrl);
+        } else {
+            createScheduleTask(
+                    originJob.getUrl(),
+                    originJob.getRequestMethod(),
+                    originJob.getCronExpression(),
+                    originJob.getProject(),
+                    originJob.getId()
+            );
         }
 
         return result;

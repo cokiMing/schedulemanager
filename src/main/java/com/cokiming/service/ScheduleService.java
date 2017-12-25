@@ -80,7 +80,6 @@ public class ScheduleService {
                 job.setProject(logInfo.project());
                 job.setCronExpression(scheduled.cron());
                 job.setDescription(logInfo.description());
-                job.setJobName(ScheduleUtil.createJobName(logInfo.url(),logInfo.project(),scheduled.cron()));
                 jobList.add(job);
             }
         }
@@ -109,15 +108,16 @@ public class ScheduleService {
         return Result.success(jsonObject);
     }
 
-    public void updateJobCron(String jobName,String cron,String newJobName,String description) {
+    public void updateJobCron(String id,String cron,String newJobName,String description,String url) {
         ScheduleJob condition = new ScheduleJob();
-        condition.setJobName(jobName);
+        condition.setId(id);
         condition.setStatus(ScheduleJob.STATUS_CREATE);
 
         ScheduleJob model = new ScheduleJob();
         model.setCronExpression(cron);
         model.setJobName(newJobName);
         model.setDescription(description);
+        model.setUrl(url);
 
         scheduleJobDao.updateByCondition(condition,model);
     }

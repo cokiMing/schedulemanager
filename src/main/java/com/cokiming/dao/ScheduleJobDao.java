@@ -80,6 +80,9 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         if (model.getCronExpression() != null) {
             update.set("cronExpression",model.getCronExpression());
         }
+        if (model.getUrl() != null) {
+            update.set("url",model.getUrl());
+        }
         if (model.getDescription() != null) {
             update.set("description",model.getDescription());
         }

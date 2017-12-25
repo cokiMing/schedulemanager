@@ -8,6 +8,7 @@ import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.quartz.CronExpression;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -149,15 +150,17 @@ public class ScheduleController {
             return Result.fail("没有找到任务");
         }
 
+        String url = requestObject.getString("url");
+        if (StringUtils.isEmpty(url)) {
+            return Result.fail("url为空");
+        }
+
         String description = requestObject.getString("description");
         return scheduleManager.updateSchedule(
-                scheduleJob.getJobName(),
-                scheduleJob.getProject(),
+                scheduleJob,
+                url,
                 cron,
-                scheduleJob.getUrl(),
-                scheduleJob.getRequestMethod(),
-                description,
-                id
+                description
         );
     }
 

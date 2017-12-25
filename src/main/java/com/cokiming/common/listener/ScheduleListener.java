@@ -1,6 +1,7 @@
 package com.cokiming.common.listener;
 
 import com.cokiming.common.annotation.LogInfo;
+import com.cokiming.common.exception.DuplicateJobIdException;
 import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.service.ScheduleHolder;
 import com.cokiming.service.ScheduleManager;
@@ -38,11 +39,13 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         ScheduleJob model = new ScheduleJob();
         model.setStatus(ScheduleJob.STATUS_CREATE);
         List<ScheduleJob> scheduleJobs = scheduleService.selectByModel(model);
+        Set<String> idSet = Sets.newHashSet();
 
         for (ScheduleJob scheduleJob : scheduleJobs) {
             try {
                 scheduleManager.startSchedule(scheduleJob);
                 logger.info("启动任务: " + scheduleJob.getJobName());
+                idSet.add(scheduleJob.getId());
             } catch (SchedulerException e) {
                 //启动失败的过期任务直接清除
                 logger.error("启动失败: " + e.getMessage());
@@ -55,12 +58,11 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         //校验写死的任务中id是否有重复
         Class<ScheduleHolder> scheduleHolderClass = ScheduleHolder.class;
         Method[] methods = scheduleHolderClass.getDeclaredMethods();
-        Set<String> idSet = Sets.newHashSet();
         for (Method method : methods) {
             LogInfo logInfo = method.getAnnotation(LogInfo.class);
             if (logInfo != null) {
                 if (idSet.contains(logInfo.id())) {
-                    throw new RuntimeException("duplicate jobId");
+                    throw new DuplicateJobIdException("duplicate jobId: " + logInfo.id());
                 } else {
                     idSet.add(logInfo.id());
                 }

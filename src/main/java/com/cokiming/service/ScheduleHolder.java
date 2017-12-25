@@ -23,7 +23,7 @@ public class ScheduleHolder {
         return result;
     }
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     @LogInfo(id = "schedule002", name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
     public String test2() {
         logger.info("test...");
