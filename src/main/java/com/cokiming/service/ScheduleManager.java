@@ -127,6 +127,7 @@ public class ScheduleManager {
         log.setJobId(id);
         log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
         log.setFailTimes(0);
+        int failTimes = 1;
 
         try{
             switch (method) {
@@ -142,7 +143,6 @@ public class ScheduleManager {
             }
         } catch (Exception e) {
             ScheduleLog origin = scheduleService.selectLatestOneByJobId(id);
-            int failTimes = 1;
             if (origin != null) {
                 failTimes = origin.getFailTimes() + 1;
             }
@@ -150,10 +150,11 @@ public class ScheduleManager {
             log.setExecuteResult(ScheduleLog.RESULT_FAIL);
             log.setReturnContent(null);
             log.setFailTimes(failTimes);
-            //失败超过最大限制次数或任务生命周期结束即删除任务
-            if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES || checkCronExpire(cronExpression)) {
-                fireSchedule(jobName,project);
-            }
+        }
+
+        //失败超过最大限制次数或任务生命周期结束即删除任务
+        if (failTimes >= ScheduleLog.DEFAULT_MAX_FAIL_TIMES || checkCronExpire(cronExpression)) {
+            fireSchedule(jobName,project);
         }
 
         scheduleService.saveScheduleLog(log);
