@@ -7,6 +7,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
+ * 在这里添加的定时任务无法通过接口更改，
+ * 请增加@LogInfo注解，且id不能重复，否则项目无法正常启动
+ *
  * @author wuyiming
  * Created by wuyiming on 2017/12/18.
  */
@@ -23,11 +26,4 @@ public class ScheduleHolder {
         return result;
     }
 
-    @Scheduled(cron = "0 0/5 * * * ?")
-    @LogInfo(id = "schedule002", name = "test", url = "www.baidu.com",description = "test schedule",project = "schedule")
-    public String test2() {
-        logger.info("test...");
-        String result = "ok！";
-        return result;
-    }
 }

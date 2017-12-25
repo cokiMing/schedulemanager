@@ -35,6 +35,8 @@ public class SpringMongoConfig {
         MongoFactoryBean factoryBean = new MongoFactoryBean();
         factoryBean.setServerStrings(serverStrings);
         factoryBean.setAuthDb(authDb);
+//        factoryBean.setUsername(username);
+//        factoryBean.setPassword(password);
 
         return factoryBean;
     }
