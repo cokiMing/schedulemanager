@@ -51,7 +51,7 @@ public class ScheduleLogDao extends BasicDAO<ScheduleLog, ObjectId> {
         Query<ScheduleLog> query = getNewQuery();
         query.field("jobId").equal(jobId);
 
-        return super.find(query).countAll();
+        return super.count(query);
     }
 
     private Query<ScheduleLog> getNewQuery() {
