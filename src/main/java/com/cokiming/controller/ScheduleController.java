@@ -129,12 +129,17 @@ public class ScheduleController {
     }
 
     /**
-     * 更新任务的运行时间
+     * 更新定时任务
+     * 也可用于过期任务的恢复
      * @return
      */
     @RequestMapping(value = "/updateJobById",method = RequestMethod.PUT)
     public Result updateJobById(@RequestBody JSONObject requestObject) {
         String id = requestObject.getString("id");
+        if (id == null) {
+            return Result.fail("id为空");
+        }
+
         String cron = requestObject.getString("cronExpression");
         if (cron == null) {
             Date targetTime = requestObject.getDate("targetTime");
@@ -143,6 +148,15 @@ public class ScheduleController {
             } else {
                 return Result.fail("执行时间异常");
             }
+        } else {
+            if (!checkCronExpression(cron)) {
+                return Result.fail("cron表达式格式不正确");
+            }
+        }
+
+        String url = requestObject.getString("url");
+        if (StringUtils.isEmpty(url)) {
+            return Result.fail("url为空");
         }
 
         ScheduleJob scheduleJob = scheduleService.selectJobById(id);
@@ -150,10 +164,6 @@ public class ScheduleController {
             return Result.fail("没有找到任务");
         }
 
-        String url = requestObject.getString("url");
-        if (StringUtils.isEmpty(url)) {
-            return Result.fail("url为空");
-        }
 
         String description = requestObject.getString("description");
         return scheduleManager.updateSchedule(

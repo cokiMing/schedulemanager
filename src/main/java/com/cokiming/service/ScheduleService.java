@@ -108,16 +108,17 @@ public class ScheduleService {
         return Result.success(jsonObject);
     }
 
-    public void updateJobCron(String id,String cron,String newJobName,String description,String url) {
+    public void updateJobCron(String id,String cron,String newJobName,String description,String url,String status) {
         ScheduleJob condition = new ScheduleJob();
         condition.setId(id);
-        condition.setStatus(ScheduleJob.STATUS_CREATE);
+        condition.setStatus(status);
 
         ScheduleJob model = new ScheduleJob();
         model.setCronExpression(cron);
         model.setJobName(newJobName);
         model.setDescription(description);
         model.setUrl(url);
+        model.setStatus(ScheduleJob.STATUS_CREATE);
 
         scheduleJobDao.updateByCondition(condition,model);
     }
@@ -128,17 +129,6 @@ public class ScheduleService {
 
     public ScheduleJob selectOneByModel(ScheduleJob scheduleJob) {
         return new ScheduleJob();
-    }
-
-    public void resumeSchedule(String jobName) {
-        ScheduleJob condition = new ScheduleJob();
-        condition.setJobName(jobName);
-
-        ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_CREATE);
-
-        scheduleJobDao.updateByCondition(condition,model);
-        logger.info("恢复了："+ jobName);
     }
 
     public void removeJob(String jobName) {

@@ -87,7 +87,7 @@ public class ScheduleManager {
         Result result = createScheduleTask(newUrl, originJob.getRequestMethod(), newCron, originJob.getProject(),originJob.getId());
         if (result.isSuccess()) {
             String newJobName = ScheduleUtil.createJobName(newUrl,originJob.getProject(),newCron);
-            scheduleService.updateJobCron(originJob.getId(), newCron, newJobName,description,newUrl);
+            scheduleService.updateJobCron(originJob.getId(), newCron, newJobName,description,newUrl,originJob.getStatus());
         } else {
             createScheduleTask(
                     originJob.getUrl(),
