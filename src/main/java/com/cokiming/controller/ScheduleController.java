@@ -114,7 +114,16 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/getFiredJobs",method = RequestMethod.GET)
     public Result getFiredJobs() {
-        return Result.success(scheduleService.selectFiredJobs());
+        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.STATUS_FIRED));
+    }
+
+    /**
+     * 获取被删除的定时任务
+     * @return
+     */
+    @RequestMapping(value = "/getDeleteJobs",method = RequestMethod.GET)
+    public Result getDeleteJobs() {
+        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.STATUS_DELETE));
     }
 
     /**
