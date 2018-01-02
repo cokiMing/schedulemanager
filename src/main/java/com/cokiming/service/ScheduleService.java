@@ -62,9 +62,7 @@ public class ScheduleService {
 
     public List<ScheduleJob> selectAvailableJobs() {
         //数据库已存的任务
-        ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_CREATE);
-        List<ScheduleJob> jobList = selectByModel(model);
+        List<ScheduleJob> jobList = selectJobByStatus(ScheduleJob.STATUS_CREATE);
 
         //holder中写死的任务
         Class<ScheduleHolder> holderClass = ScheduleHolder.class;
@@ -87,13 +85,11 @@ public class ScheduleService {
         return jobList;
     }
 
-    public List<ScheduleJob> selectFiredJobs() {
+    public List<ScheduleJob> selectJobByStatus(String status) {
         //数据库已存的任务
         ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_FIRED);
-        List<ScheduleJob> jobList = selectByModel(model);
-
-        return jobList;
+        model.setStatus(status);
+        return selectByModel(model);
     }
 
     public Result selectLogsByPage(String jobId, int pageNo, int pageSize) {
