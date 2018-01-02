@@ -44,7 +44,7 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         for (ScheduleJob scheduleJob : scheduleJobs) {
             try {
                 scheduleManager.startSchedule(scheduleJob);
-                logger.info("启动任务: " + scheduleJob.getJobName());
+                logger.info("启动任务: " + scheduleJob.getName());
                 idSet.add(scheduleJob.getId());
             } catch (SchedulerException e) {
                 //启动失败的过期任务直接清除

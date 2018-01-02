@@ -25,4 +25,6 @@ public class SpringAppConfig {
 
         return registrationBean;
     }
+
+
 }
