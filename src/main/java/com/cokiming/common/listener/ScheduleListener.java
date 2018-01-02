@@ -10,11 +10,11 @@ import com.google.common.collect.Sets;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
@@ -26,10 +26,10 @@ import java.util.Set;
 @Component
 public class ScheduleListener implements ApplicationListener<ContextRefreshedEvent> {
 
-    @Autowired
+    @Resource
     private ScheduleService scheduleService;
 
-    @Autowired
+    @Resource
     private ScheduleManager scheduleManager;
 
     private Log logger = LogFactory.getLog(ScheduleListener.class);

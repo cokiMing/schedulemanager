@@ -12,9 +12,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 
 /**
@@ -27,7 +27,7 @@ public class ScheduleLogAspect {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    @Autowired
+    @Resource
     private ScheduleService scheduleService;
 
     @Pointcut("@annotation(com.cokiming.common.annotation.LogInfo)")

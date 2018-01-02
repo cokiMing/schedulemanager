@@ -10,9 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import org.quartz.CronExpression;
 import org.quartz.ObjectAlreadyExistsException;
 import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -27,7 +27,7 @@ public class ScheduleManager {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    @Autowired
+    @Resource
     private ScheduleService scheduleService;
 
     public void startSchedule(ScheduleJob scheduleJob) throws Exception {

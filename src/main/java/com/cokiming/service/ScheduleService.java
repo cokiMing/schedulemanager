@@ -3,7 +3,6 @@ package com.cokiming.service;
 import com.alibaba.fastjson.JSONObject;
 import com.cokiming.common.annotation.LogInfo;
 import com.cokiming.common.pojo.Result;
-import com.cokiming.common.util.ScheduleUtil;
 import com.cokiming.dao.ScheduleJobDao;
 import com.cokiming.dao.ScheduleLogDao;
 import com.cokiming.dao.entity.ScheduleJob;
@@ -11,10 +10,10 @@ import com.cokiming.dao.entity.ScheduleLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -27,10 +26,10 @@ public class ScheduleService {
 
     private Log logger = LogFactory.getLog(this.getClass());
 
-    @Autowired
+    @Resource
     private ScheduleJobDao scheduleJobDao;
 
-    @Autowired
+    @Resource
     private ScheduleLogDao scheduleLogDao;
 
     public void saveScheduleLog(ScheduleLog scheduleLog) {

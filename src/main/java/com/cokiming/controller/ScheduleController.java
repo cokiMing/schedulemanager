@@ -7,10 +7,10 @@ import com.cokiming.dao.entity.ScheduleJob;
 import com.cokiming.service.ScheduleManager;
 import com.cokiming.service.ScheduleService;
 import org.quartz.CronExpression;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -21,10 +21,10 @@ import java.util.Date;
 @RestController
 public class ScheduleController {
 
-    @Autowired
+    @Resource
     private ScheduleManager scheduleManager;
 
-    @Autowired
+    @Resource
     private ScheduleService scheduleService;
 
     /**
