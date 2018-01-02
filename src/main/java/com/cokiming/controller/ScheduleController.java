@@ -114,7 +114,7 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/getFiredJobs",method = RequestMethod.GET)
     public Result getFiredJobs() {
-        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.STATUS_FIRED));
+        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.Status.FIRED));
     }
 
     /**
@@ -123,7 +123,7 @@ public class ScheduleController {
      */
     @RequestMapping(value = "/getDeleteJobs",method = RequestMethod.GET)
     public Result getDeleteJobs() {
-        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.STATUS_DELETE));
+        return Result.success(scheduleService.selectJobByStatus(ScheduleJob.Status.DELETE));
     }
 
     /**

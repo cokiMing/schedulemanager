@@ -125,7 +125,7 @@ public class ScheduleManager {
         String jobName = createJobName(url,project,cronExpression);
         ScheduleLog log = new ScheduleLog();
         log.setJobId(id);
-        log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
+        log.setExecuteResult(ScheduleLog.Result.SUCCESS);
         log.setFailTimes(0);
         int failTimes = 1;
 
@@ -147,7 +147,7 @@ public class ScheduleManager {
                 failTimes = origin.getFailTimes() + 1;
             }
             log.setException(e.getMessage());
-            log.setExecuteResult(ScheduleLog.RESULT_FAIL);
+            log.setExecuteResult(ScheduleLog.Result.FAIL);
             log.setReturnContent(null);
             log.setFailTimes(failTimes);
         }
@@ -184,7 +184,7 @@ public class ScheduleManager {
         job.setUrl(url);
         job.setName(name);
         job.setDescription(description);
-        job.setStatus(ScheduleJob.STATUS_CREATE);
+        job.setStatus(ScheduleJob.Status.CREATE);
 
         return scheduleService.saveScheduleJob(job);
     }

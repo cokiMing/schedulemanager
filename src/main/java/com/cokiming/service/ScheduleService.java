@@ -61,7 +61,7 @@ public class ScheduleService {
 
     public List<ScheduleJob> selectAvailableJobs() {
         //数据库已存的任务
-        List<ScheduleJob> jobList = selectJobByStatus(ScheduleJob.STATUS_CREATE);
+        List<ScheduleJob> jobList = selectJobByStatus(ScheduleJob.Status.CREATE);
 
         //holder中写死的任务
         Class<ScheduleHolder> holderClass = ScheduleHolder.class;
@@ -113,7 +113,7 @@ public class ScheduleService {
         model.setJobName(newJobName);
         model.setDescription(description);
         model.setUrl(url);
-        model.setStatus(ScheduleJob.STATUS_CREATE);
+        model.setStatus(ScheduleJob.Status.CREATE);
 
         scheduleJobDao.updateByCondition(condition,model);
     }
@@ -129,10 +129,10 @@ public class ScheduleService {
     public void removeJob(String jobName) {
         ScheduleJob condition = new ScheduleJob();
         condition.setJobName(jobName);
-        condition.setStatus(ScheduleJob.STATUS_CREATE);
+        condition.setStatus(ScheduleJob.Status.CREATE);
 
         ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_DELETE);
+        model.setStatus(ScheduleJob.Status.DELETE);
 
         scheduleJobDao.updateByCondition(condition,model);
         logger.info("移除了："+ jobName);
@@ -141,10 +141,10 @@ public class ScheduleService {
     public void fireJob(String jobName) {
         ScheduleJob condition = new ScheduleJob();
         condition.setJobName(jobName);
-        condition.setStatus(ScheduleJob.STATUS_CREATE);
+        condition.setStatus(ScheduleJob.Status.CREATE);
 
         ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_FIRED);
+        model.setStatus(ScheduleJob.Status.FIRED);
 
         scheduleJobDao.updateByCondition(condition,model);
         logger.info("系统删除了："+ jobName);

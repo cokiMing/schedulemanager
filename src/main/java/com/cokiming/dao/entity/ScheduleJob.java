@@ -35,12 +35,6 @@ public class ScheduleJob {
     /**状态*/
     private String status;
 
-    public static final String STATUS_CREATE = "CREATE";
-
-    public static final String STATUS_DELETE = "DELETE";
-
-    public static final String STATUS_FIRED = "FIRED";
-
     public String getId() {
         return id;
     }
@@ -143,5 +137,14 @@ public class ScheduleJob {
                 ", updateTime=" + updateTime +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    public interface Status {
+
+        String CREATE = "CREATE";
+
+        String DELETE = "DELETE";
+
+        String FIRED = "FIRED";
     }
 }

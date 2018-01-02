@@ -29,10 +29,6 @@ public class ScheduleLog {
     /**连续失败次数*/
     private int failTimes;
 
-    public static final String RESULT_SUCCESS = "SUCCESS";
-
-    public static final String RESULT_FAIL = "FAIL";
-
     public static final int DEFAULT_MAX_FAIL_TIMES = 5;
 
     public String getId() {
@@ -110,5 +106,12 @@ public class ScheduleLog {
             ", jobName='" + jobId + '\'' +
             ", methodName='" + methodName + '\'' +
             '}';
-}
+    }
+
+    public interface Result {
+
+        String SUCCESS = "SUCCESS";
+
+        String FAIL = "FAIL";
+    }
 }

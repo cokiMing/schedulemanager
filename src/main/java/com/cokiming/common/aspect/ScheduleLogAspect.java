@@ -74,12 +74,12 @@ public class ScheduleLogAspect {
                     failTimes = origin.getFailTimes() + 1;
                 }
                 log.setException(e.getMessage());
-                log.setExecuteResult(ScheduleLog.RESULT_FAIL);
+                log.setExecuteResult(ScheduleLog.Result.FAIL);
                 log.setReturnContent(null);
                 log.setFailTimes(failTimes);
             } else {
                 log.setFailTimes(0);
-                log.setExecuteResult(ScheduleLog.RESULT_SUCCESS);
+                log.setExecuteResult(ScheduleLog.Result.SUCCESS);
             }
         } catch (Exception ex) {
             logger.error(ex.getMessage());

@@ -37,7 +37,7 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         ScheduleJob model = new ScheduleJob();
-        model.setStatus(ScheduleJob.STATUS_CREATE);
+        model.setStatus(ScheduleJob.Status.CREATE);
         List<ScheduleJob> scheduleJobs = scheduleService.selectByModel(model);
         Set<String> idSet = Sets.newHashSet();
 
