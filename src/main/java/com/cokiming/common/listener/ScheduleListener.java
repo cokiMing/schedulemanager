@@ -11,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ApplicationContextEvent;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +26,7 @@ import java.util.Set;
  * Created by wuyiming on 2017/12/15.
  */
 @Component
-public class ScheduleListener implements ApplicationListener<ContextRefreshedEvent> {
+public class ScheduleListener implements ApplicationListener<ApplicationContextEvent> {
 
     @Resource
     private ScheduleService scheduleService;
@@ -35,9 +37,18 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
     private Log logger = LogFactory.getLog(ScheduleListener.class);
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void onApplicationEvent(ApplicationContextEvent event) {
+        if (event instanceof ContextRefreshedEvent) {
+            startJob();
+        } else if (event instanceof ContextClosedEvent) {
+            stopJob();
+        }
+    }
+
+    private void startJob() {
         ScheduleJob model = new ScheduleJob();
         model.setStatus(ScheduleJob.Status.CREATE);
+        model.setStarted(ScheduleJob.Started.OFF);
         List<ScheduleJob> scheduleJobs = scheduleService.selectByModel(model);
         Set<String> idSet = Sets.newHashSet();
 
@@ -70,5 +81,23 @@ public class ScheduleListener implements ApplicationListener<ContextRefreshedEve
         }
 
         logger.info("启动备份定时任务完成");
+    }
+
+    private void stopJob() {
+        ScheduleJob model = new ScheduleJob();
+        model.setStatus(ScheduleJob.Status.CREATE);
+        model.setStarted(ScheduleJob.Started.ON);
+        List<ScheduleJob> scheduleJobs = scheduleService.selectByModel(model);
+
+        for (ScheduleJob scheduleJob : scheduleJobs) {
+            try {
+                scheduleManager.stopSchedule(scheduleJob);
+                logger.info("停止任务: " + scheduleJob.getName());
+            } catch (Exception e) {
+                logger.error("停止失败: " + e.getMessage());
+            }
+        }
+
+        logger.info("schedule任务停止完成");
     }
 }

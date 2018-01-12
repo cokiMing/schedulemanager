@@ -30,7 +30,8 @@ public class HttpUtil {
     }
 
     public static String get(String url) throws Exception {
-        return Request.Get(url).execute().returnContent().asString();
+//        return Request.Get(url).execute().returnContent().asString();
+        return HttpClientPool.httpGet(url,null);
     }
 
     public static String delete(String url) throws Exception {

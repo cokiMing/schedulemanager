@@ -43,6 +43,9 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         if (scheduleJob.getStatus() != null) {
             query.field("status").equal(scheduleJob.getStatus());
         }
+        if (scheduleJob.getStarted() != null) {
+            query.field("started").equal(scheduleJob.getStarted());
+        }
         query.order("-updateTime");
 
         return super.find(query).asList();
@@ -85,6 +88,9 @@ public class ScheduleJobDao extends BasicDAO<ScheduleJob, ObjectId> {
         }
         if (model.getDescription() != null) {
             update.set("description",model.getDescription());
+        }
+        if (model.getStarted() != null) {
+            update.set("started",model.getStarted());
         }
         update.set("updateTime",new Date());
 

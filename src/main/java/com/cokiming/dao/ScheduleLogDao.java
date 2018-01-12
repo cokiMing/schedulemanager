@@ -54,6 +54,13 @@ public class ScheduleLogDao extends BasicDAO<ScheduleLog, ObjectId> {
         return super.count(query);
     }
 
+    public int removeByDate(Date date) {
+        Query<ScheduleLog> query = getNewQuery();
+        query.field("executeTime").lessThanOrEq(date);
+
+        return super.deleteByQuery(query).getN();
+    }
+
     private Query<ScheduleLog> getNewQuery() {
         return super.getDs().createQuery(ScheduleLog.class);
     }

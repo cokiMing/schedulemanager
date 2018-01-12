@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  * Created by wuyiming on 2018/1/2.
  */
 @Component
-public class SpringMVCConfig extends WebMvcConfigurerAdapter {
+public class SpringMvcConfig extends WebMvcConfigurerAdapter {
 
     /**
      * 拦截器加载

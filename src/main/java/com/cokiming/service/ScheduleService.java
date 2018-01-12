@@ -103,10 +103,9 @@ public class ScheduleService {
         return Result.success(jsonObject);
     }
 
-    public void updateJobCron(String id,String cron,String newJobName,String description,String url,String status) {
+    public void updateJob(String id,String cron,String newJobName,String description,String url,Integer started) {
         ScheduleJob condition = new ScheduleJob();
         condition.setId(id);
-        condition.setStatus(status);
 
         ScheduleJob model = new ScheduleJob();
         model.setCronExpression(cron);
@@ -114,6 +113,7 @@ public class ScheduleService {
         model.setDescription(description);
         model.setUrl(url);
         model.setStatus(ScheduleJob.Status.CREATE);
+        model.setStarted(started);
 
         scheduleJobDao.updateByCondition(condition,model);
     }
@@ -144,6 +144,7 @@ public class ScheduleService {
         condition.setStatus(ScheduleJob.Status.CREATE);
 
         ScheduleJob model = new ScheduleJob();
+        model.setStarted(ScheduleJob.Started.OFF);
         model.setStatus(ScheduleJob.Status.FIRED);
 
         scheduleJobDao.updateByCondition(condition,model);

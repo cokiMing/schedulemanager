@@ -41,6 +41,13 @@ public class ScheduleManager {
                 scheduleJob.getRequestMethod(),
                 scheduleJob.getId()
         );
+
+        scheduleService.updateJob(scheduleJob.getId(),null,null,null,null,ScheduleJob.Started.ON);
+    }
+
+    public void stopSchedule(ScheduleJob scheduleJob) throws Exception {
+        ScheduleUtil.removeSchedule(scheduleJob.getJobName(),scheduleJob.getProject());
+        scheduleService.updateJob(scheduleJob.getId(),null,null,null,null,ScheduleJob.Started.OFF);
     }
 
     public Result createSchedule(String url, String method, Date targetTime, String project,String name,String description) {
@@ -86,8 +93,8 @@ public class ScheduleManager {
         //更新任务信息
         Result result = createScheduleTask(newUrl, originJob.getRequestMethod(), newCron, originJob.getProject(),originJob.getId());
         if (result.isSuccess()) {
-            String newJobName = ScheduleUtil.createJobName(newUrl,originJob.getProject(),newCron);
-            scheduleService.updateJobCron(originJob.getId(), newCron, newJobName,description,newUrl,originJob.getStatus());
+            String newJobName = createJobName(newUrl,originJob.getProject(),newCron);
+            scheduleService.updateJob(originJob.getId(), newCron, newJobName,description,newUrl,null);
         } else {
             createScheduleTask(
                     originJob.getUrl(),

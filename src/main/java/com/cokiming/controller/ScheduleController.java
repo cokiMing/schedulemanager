@@ -173,7 +173,6 @@ public class ScheduleController {
             return Result.fail("没有找到任务");
         }
 
-
         String description = requestObject.getString("description");
         return scheduleManager.updateSchedule(
                 scheduleJob,
@@ -200,14 +199,21 @@ public class ScheduleController {
         return scheduleManager.removeSchedule(scheduleJob.getJobName(),scheduleJob.getProject());
     }
 
+    /**
+     * 心跳检测
+     * @return
+     */
+    @RequestMapping(value = "/heartbeat",method = RequestMethod.GET)
+    public Result heartBeat() {
+        return Result.success();
+    }
+
     private boolean checkCronExpression(String cronExpression) {
         try {
             new CronExpression(cronExpression);
             return true;
         } catch (ParseException e) {
-
+            return false;
         }
-
-        return false;
     }
 }

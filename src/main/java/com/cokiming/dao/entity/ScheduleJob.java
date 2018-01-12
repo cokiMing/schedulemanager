@@ -11,8 +11,9 @@ import java.util.Date;
  */
 @Entity(noClassnameStored = true)
 public class ScheduleJob {
-    @Id
+
     /**定时任务id*/
+    @Id
     private String id;
     /**接口地址*/
     private String url;
@@ -34,6 +35,8 @@ public class ScheduleJob {
     private Date updateTime;
     /**状态*/
     private String status;
+    /**启动情况*/
+    private Integer started;
 
     public String getId() {
         return id;
@@ -123,6 +126,14 @@ public class ScheduleJob {
         this.name = name;
     }
 
+    public Integer getStarted() {
+        return started;
+    }
+
+    public void setStarted(int started) {
+        this.started = started;
+    }
+
     @Override
     public String toString() {
         return "ScheduleJob{" +
@@ -146,5 +157,11 @@ public class ScheduleJob {
         String DELETE = "DELETE";
 
         String FIRED = "FIRED";
+    }
+
+    public interface Started {
+        int ON = 1;
+
+        int OFF = 0;
     }
 }
